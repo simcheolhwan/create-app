@@ -1,0 +1,33 @@
+{
+  "name": "create-app",
+  "type": "module",
+  "bin": {
+    "create-app": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template-*",
+    "dist"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build": "unbuild"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "@types/prompts": "^2.4.2",
+    "kolorist": "^1.6.0",
+    "lint-staged": "^13.1.0",
+    "prettier": "^2.8.3",
+    "prompts": "^2.4.2",
+    "simple-git-hooks": "^2.8.1",
+    "unbuild": "^1.1.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged --concurrent false"
+  },
+  "lint-staged": {
+    "*": "prettier --write"
+  }
+}
