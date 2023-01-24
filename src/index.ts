@@ -6,7 +6,7 @@ import { red, reset } from "kolorist"
 
 const cwd = process.cwd()
 
-const TEMPLATES = ["react-base"]
+const TEMPLATES = ["react-base", "react-boilerplate"]
 
 const renameFiles: Record<string, string | undefined> = {
   _gitignore: ".gitignore",
