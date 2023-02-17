@@ -2,8 +2,9 @@
   "name": "project",
   "version": "1.0.0",
   "scripts": {
+    "typecheck": "tsc",
     "dev": "vite",
-    "lint": "tsc && eslint src",
+    "lint": "eslint src",
     "build": "vite build"
   },
   "dependencies": {
