@@ -6,7 +6,7 @@ import { red, reset } from "kolorist"
 
 const cwd = process.cwd()
 
-const TEMPLATES = ["react-base", "react-boilerplate"]
+const TEMPLATES = ["react-base", "react-boilerplate", "react-crypto"]
 
 const renameFiles: Record<string, string | undefined> = {
   _gitignore: ".gitignore",
@@ -120,7 +120,7 @@ async function init() {
     console.log(`  cd ${path.relative(cwd, root)}`)
   }
 
-  console.log(`  pnpm install`)
+  console.log(`  pnpm i`)
   console.log(`  pnpm dev`)
   console.log()
 }
