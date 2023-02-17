@@ -35,7 +35,9 @@ async function init() {
         {
           type: () => (!fs.existsSync(targetDir) || isEmpty(targetDir) ? null : "confirm"),
           name: "overwrite",
-          message: () => (targetDir === "." ? "Current directory" : `Target directory "${targetDir}"`) + ` is not empty. Remove existing files and continue?`,
+          message: () =>
+            (targetDir === "." ? "Current directory" : `Target directory "${targetDir}"`) +
+            ` is not empty. Remove existing files and continue?`,
         },
         {
           type: (_, { overwrite }: { overwrite?: boolean }) => {
