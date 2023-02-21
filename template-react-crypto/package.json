@@ -36,7 +36,7 @@
     "vitest": "^0.28.5"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm exec lint-staged --concurrent false"
+    "pre-commit": "pnpm lint-staged --concurrent false"
   },
   "lint-staged": {
     "*": "prettier --write",
