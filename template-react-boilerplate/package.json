@@ -2,10 +2,11 @@
   "name": "project",
   "version": "1.0.0",
   "scripts": {
-    "typecheck": "tsc",
     "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc",
     "lint": "eslint src",
-    "build": "vite build"
+    "postinstall": "simple-git-hooks"
   },
   "dependencies": {
     "@mantine/core": "^5.10.1",
