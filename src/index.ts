@@ -73,7 +73,7 @@ async function init() {
         onCancel: () => {
           throw new Error(red("✖") + " Operation cancelled")
         },
-      }
+      },
     )
   } catch (cancelled: any) {
     console.log(cancelled.message)

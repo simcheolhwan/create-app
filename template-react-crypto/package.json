@@ -10,30 +10,30 @@
     "postinstall": "simple-git-hooks"
   },
   "dependencies": {
-    "@mantine/core": "^5.10.1",
-    "@tanstack/react-query": "^4.22.4",
-    "ramda": "^0.28.0",
+    "@mantine/core": "^7.2.1",
+    "@tanstack/react-query": "^5.7.2",
+    "ramda": "^0.29.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.7.0",
-    "recoil": "^0.7.6"
+    "react-router-dom": "^6.18.0",
+    "recoil": "^0.7.7"
   },
   "devDependencies": {
-    "@rollup/plugin-inject": "^5.0.3",
-    "@tsconfig/vite-react": "^1.0.1",
-    "@types/ramda": "^0.28.21",
-    "@types/react": "^18.0.27",
-    "@types/react-dom": "^18.0.10",
-    "@vitejs/plugin-react-swc": "^3.0.1",
-    "eslint": "^8.32.0",
+    "@rollup/plugin-inject": "^5.0.5",
+    "@tsconfig/vite-react": "^2.0.1",
+    "@types/ramda": "^0.29.8",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react-swc": "^3.4.1",
+    "eslint": "^8.53.0",
     "eslint-config-react-app": "^7.0.1",
-    "lint-staged": "^13.1.0",
+    "lint-staged": "^15.0.2",
     "node-stdlib-browser": "^1.2.0",
-    "prettier": "^2.8.3",
-    "simple-git-hooks": "^2.8.1",
-    "typescript": "^4.9.4",
-    "vite": "^4.0.4",
-    "vitest": "^0.28.5"
+    "prettier": "^3.0.3",
+    "simple-git-hooks": "^2.9.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vitest": "^0.34.6"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged --concurrent false"

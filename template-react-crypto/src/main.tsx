@@ -15,5 +15,5 @@ createRoot(document.getElementById("root") as HTMLElement).render(
         <RouterProvider router={router} />
       </QueryClientProvider>
     </MantineProvider>
-  </StrictMode>
+  </StrictMode>,
 )
