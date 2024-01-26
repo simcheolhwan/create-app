@@ -15,11 +15,11 @@
     "build": "unbuild"
   },
   "devDependencies": {
-    "@types/node": "^20.9.0",
-    "@types/prompts": "^2.4.8",
+    "@types/node": "^20.11.7",
+    "@types/prompts": "^2.4.9",
     "kolorist": "^1.8.0",
-    "lint-staged": "^15.0.2",
-    "prettier": "^3.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.4",
     "prompts": "^2.4.2",
     "simple-git-hooks": "^2.9.0",
     "unbuild": "^2.0.0"
