@@ -6,28 +6,24 @@
   },
   "files": [
     "index.js",
-    "template-*",
+    "template",
     "dist"
   ],
   "main": "index.js",
   "scripts": {
-    "dev": "unbuild --stub",
-    "build": "unbuild"
+    "dev": "tsx src",
+    "build": "unbuild",
+    "stub": "unbuild --stub"
   },
   "devDependencies": {
-    "@types/node": "^20.11.7",
+    "@types/node": "^22.1.0",
     "@types/prompts": "^2.4.9",
     "kolorist": "^1.8.0",
-    "lint-staged": "^15.2.0",
-    "prettier": "^3.2.4",
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.3",
     "prompts": "^2.4.2",
-    "simple-git-hooks": "^2.9.0",
+    "simple-git-hooks": "^2.11.1",
+    "tsx": "^4.16.5",
     "unbuild": "^2.0.0"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged --concurrent false"
-  },
-  "lint-staged": {
-    "*": "prettier --write --ignore-unknown"
   }
 }

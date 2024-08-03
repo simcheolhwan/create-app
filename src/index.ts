@@ -1,184 +1,78 @@
 import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
-import prompts from "prompts"
-import { red, reset } from "kolorist"
+import { execSync } from "node:child_process"
+import { copySync } from "./utils"
+import prompt from "./prompt"
+import { defaultDependencies, defaultDevDependencies, PACKAGES } from "./packages"
+import { makeSrc } from "./src"
 
 const cwd = process.cwd()
-
-const TEMPLATES = ["react-base", "react-boilerplate", "react-crypto"]
 
 const renameFiles: Record<string, string | undefined> = {
   _gitignore: ".gitignore",
 }
 
-const defaultTargetDir = "project"
+async function main() {
+  // Get input from the user
+  const { projectName, packages } = await prompt()
 
-async function init() {
-  let targetDir = defaultTargetDir
-  const getProjectName = () => (targetDir === "." ? path.basename(path.resolve()) : targetDir)
+  // Create directory
+  const root = path.join(cwd, projectName)
 
-  let result: prompts.Answers<"projectName" | "overwrite" | "packageName" | "template">
+  // Copy or create files
+  const writeSync = (fileName: string, content?: string) => {
+    const targetPath = path.join(root, renameFiles[fileName] ?? fileName)
+    const dir = path.dirname(targetPath)
 
-  try {
-    result = await prompts(
-      [
-        {
-          type: "text",
-          name: "projectName",
-          message: reset("Project name:"),
-          initial: defaultTargetDir,
-          onState: (state) => {
-            targetDir = formatTargetDir(state.value) || defaultTargetDir
-          },
-        },
-        {
-          type: () => (!fs.existsSync(targetDir) || isEmpty(targetDir) ? null : "confirm"),
-          name: "overwrite",
-          message: () =>
-            (targetDir === "." ? "Current directory" : `Target directory "${targetDir}"`) +
-            ` is not empty. Remove existing files and continue?`,
-        },
-        {
-          type: (_, { overwrite }: { overwrite?: boolean }) => {
-            if (overwrite === false) {
-              throw new Error(red("✖") + " Operation cancelled")
-            }
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
 
-            return null
-          },
-          name: "overwriteChecker",
-        },
-        {
-          type: () => (isValidPackageName(getProjectName()) ? null : "text"),
-          name: "packageName",
-          message: reset("Package name:"),
-          initial: () => toValidPackageName(getProjectName()),
-          validate: (dir) => isValidPackageName(dir) || "Invalid package.json name",
-        },
-        {
-          type: "select",
-          name: "template",
-          message: reset("Select a template:"),
-          initial: 0,
-          choices: TEMPLATES.map((template) => {
-            return {
-              title: template,
-              value: template,
-            }
-          }),
-        },
-      ],
-      {
-        onCancel: () => {
-          throw new Error(red("✖") + " Operation cancelled")
-        },
-      },
-    )
-  } catch (cancelled: any) {
-    console.log(cancelled.message)
-    return
-  }
-
-  // user choice associated with prompts
-  const { template, overwrite, packageName } = result
-
-  const root = path.join(cwd, targetDir)
-
-  if (overwrite) {
-    emptyDir(root)
-  } else if (!fs.existsSync(root)) {
-    fs.mkdirSync(root, { recursive: true })
-  }
-
-  console.log(`\nScaffolding project in ${root}...`)
-
-  const templateDir = path.resolve(fileURLToPath(import.meta.url), "../..", `template-${template}`)
-
-  const write = (file: string, content?: string) => {
-    const targetPath = path.join(root, renameFiles[file] ?? file)
     if (content) {
       fs.writeFileSync(targetPath, content)
     } else {
-      copy(path.join(templateDir, file), targetPath)
+      copySync(path.join(templateDir, fileName), targetPath)
     }
   }
 
+  // Create folder
+  fs.mkdirSync(root, { recursive: true })
+
+  // Copy template files
+  const templateDir = path.resolve(fileURLToPath(import.meta.url), "../..", `template`)
   const files = fs.readdirSync(templateDir)
-  for (const file of files.filter((f) => f !== "package.json")) {
-    write(file)
+  for (const file of files) {
+    writeSync(file)
   }
 
-  const pkg = JSON.parse(fs.readFileSync(path.join(templateDir, `package.json`), "utf-8"))
-
-  pkg.name = packageName || getProjectName()
-
-  write("package.json", JSON.stringify(pkg, null, 2))
-
-  console.log(`\nDone. Now run:\n`)
-  if (root !== cwd) {
-    console.log(`  cd ${path.relative(cwd, root)}`)
+  // Dynamically configure src folder based on selected packages
+  for (const [fileName, render] of Object.entries(makeSrc(packages))) {
+    const content = render()
+    if (!content) continue
+    writeSync(fileName, content)
   }
 
-  console.log(`  pnpm i`)
-  console.log(`  pnpm dev`)
-  console.log()
+  // Install packages
+  const dependencies = [...defaultDependencies, ...packages]
+  const devDependencies = [
+    ...defaultDevDependencies,
+    ...packages.flatMap((pkg: string) => PACKAGES[pkg]),
+  ]
+
+  execSync(`pnpm i ${dependencies.join(" ")}`, { cwd: root, stdio: "inherit" })
+  execSync(`pnpm i -D ${devDependencies.join(" ")}`, { cwd: root, stdio: "inherit" })
+  execSync(`pnpm prettier --write .`, { cwd: root })
+
+  // git commit
+  execSync(`git init`, { cwd: root })
+  execSync(`git add .`, { cwd: root })
+  execSync(`git commit -m "Initial commit"`, { cwd: root })
+
+  // Print completion message
+  console.log(`\nDone. Now run:\n  pnpm dev\n`)
 }
 
-function formatTargetDir(targetDir: string | undefined) {
-  return targetDir?.trim().replace(/\/+$/g, "")
-}
-
-function copy(src: string, dest: string) {
-  const stat = fs.statSync(src)
-  if (stat.isDirectory()) {
-    copyDir(src, dest)
-  } else {
-    fs.copyFileSync(src, dest)
-  }
-}
-
-function isValidPackageName(projectName: string) {
-  return /^(?:@[a-z\d\-*~][a-z\d\-*._~]*\/)?[a-z\d\-~][a-z\d\-._~]*$/.test(projectName)
-}
-
-function toValidPackageName(projectName: string) {
-  return projectName
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/^[._]/, "")
-    .replace(/[^a-z\d\-~]+/g, "-")
-}
-
-function copyDir(srcDir: string, destDir: string) {
-  fs.mkdirSync(destDir, { recursive: true })
-  for (const file of fs.readdirSync(srcDir)) {
-    const srcFile = path.resolve(srcDir, file)
-    const destFile = path.resolve(destDir, file)
-    copy(srcFile, destFile)
-  }
-}
-
-function isEmpty(path: string) {
-  const files = fs.readdirSync(path)
-  return files.length === 0 || (files.length === 1 && files[0] === ".git")
-}
-
-function emptyDir(dir: string) {
-  if (!fs.existsSync(dir)) {
-    return
-  }
-
-  for (const file of fs.readdirSync(dir)) {
-    if (file === ".git") {
-      continue
-    }
-
-    fs.rmSync(path.resolve(dir, file), { recursive: true, force: true })
-  }
-}
-
-init().catch((e) => {
+main().catch((e) => {
   console.error(e)
 })

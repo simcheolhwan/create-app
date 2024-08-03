@@ -1,0 +1,21 @@
+{
+  "name": "project",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc",
+    "lint": "eslint src --fix",
+    "test": "vitest run",
+    "postinstall": "simple-git-hooks"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged --concurrent false"
+  },
+  "lint-staged": {
+    "*": "prettier --write --ignore-unknown",
+    "src/**/*.{ts,tsx}": "eslint --fix --max-warnings=0"
+  }
+}
